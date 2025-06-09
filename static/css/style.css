@@ -202,6 +202,110 @@ h2 {
     border-left: 5px solid #28a745;
 }
 
+/* Новый дизайн карточек материалов */
+.material-card-template {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    transition: box-shadow 0.2s ease;
+}
+
+.material-card-template:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.material-title {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.material-details {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 0.9rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
+}
+
+.detail-label {
+    color: #666;
+    min-width: 180px;
+    flex-shrink: 0;
+}
+
+.detail-value {
+    color: #333;
+    font-weight: 500;
+}
+
+.cost-section {
+    text-align: right;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+.cost-title {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+}
+
+.cost-amount {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #546F94;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+}
+
+.action-buttons .btn {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .detail-label {
+        min-width: auto;
+        font-weight: bold;
+        margin-bottom: 0.1rem;
+    }
+    
+    .cost-section {
+        text-align: left;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+    }
+    
+    .action-buttons {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .action-buttons .btn {
+        flex: 1;
+        max-width: 120px;
+    }
+}
+
 /* Информационные панели */
 .info-panel {
     background-color: #ABCFCE;
