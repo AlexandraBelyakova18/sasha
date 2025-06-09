@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Система управления материалами{% endblock %}
+
+{% block page_header %}
+<h1>{{ title }}</h1>
+{% endblock %}
+
+{% block content %}
+<!-- Кнопка "Назад" -->
+<div class="back-button">
+    <a href="{{ url_for('materials') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Назад к списку материалов
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">{{ title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" data-validate novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <!-- Наименование -->
+                        <div class="col-md-6 mb-3">
+                            {{ form.name.label(class="form-label") }}
+                            {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Тип материала -->
+                        <div class="col-md-6 mb-3">
+                            {{ form.type_id.label(class="form-label") }}
+                            {{ form.type_id(class="form-select" + (" is-invalid" if form.type_id.errors else "")) }}
+                            {% if form.type_id.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.type_id.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Описание -->
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows="3") }}
+                        <div class="form-text">Необязательное поле</div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Единица измерения -->
+                        <div class="col-md-6 mb-3">
+                            {{ form.unit_of_measure.label(class="form-label") }}
+                            {{ form.unit_of_measure(class="form-control" + (" is-invalid" if form.unit_of_measure.errors else ""), placeholder="кг, л, шт, м²") }}
+                            {% if form.unit_of_measure.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.unit_of_measure.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Количество в упаковке -->
+                        <div class="col-md-6 mb-3">
+                            {{ form.quantity_in_package.label(class="form-label") }}
+                            {{ form.quantity_in_package(class="form-control" + (" is-invalid" if form.quantity_in_package.errors else ""), min="1") }}
+                            {% if form.quantity_in_package.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.quantity_in_package.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Количество на складе -->
+                        <div class="col-md-6 mb-3">
+                            {{ form.quantity_in_stock.label(class="form-label") }}
+                            {{ form.quantity_in_stock(class="form-control" + (" is-invalid" if form.quantity_in_stock.errors else ""), min="0") }}
+                            {% if form.quantity_in_stock.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.quantity_in_stock.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Минимальное количество -->
+                        <div class="col-md-6 mb-3">
+                            {{ form.min_quantity.label(class="form-label") }}
+                            {{ form.min_quantity(class="form-control" + (" is-invalid" if form.min_quantity.errors else ""), min="0") }}
+                            {% if form.min_quantity.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.min_quantity.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Цена за единицу -->
+                    <div class="col-md-6 mb-3">
+                        {{ form.price_per_unit.label(class="form-label") }}
+                        <div class="input-group">
+                            {{ form.price_per_unit(class="form-control" + (" is-invalid" if form.price_per_unit.errors else ""), min="0.01", step="0.01") }}
+                            <span class="input-group-text">₽</span>
+                        </div>
+                        {% if form.price_per_unit.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.price_per_unit.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Цена не может быть отрицательной</div>
+                    </div>
+                    
+                    <!-- Кнопки действий -->
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{{ url_for('materials') }}" class="btn btn-secondary">
+                            Отмена
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 
+                            {% if material %}Обновить{% else %}Добавить{% endif %} материал
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Дополнительная информация для редактирования -->
+        {% if material %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Дополнительная информация</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Дата создания:</strong><br>
+                            {{ material.created_at.strftime('%d.%m.%Y %H:%M') if material.created_at else 'Неизвестно' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Последнее изменение:</strong><br>
+                            {{ material.updated_at.strftime('%d.%m.%Y %H:%M') if material.updated_at else 'Неизвестно' }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Расчет стоимости -->
+                    {% set shortage_info = material.get_shortage_info() %}
+                    {% if shortage_info.has_shortage %}
+                        <div class="alert alert-warning">
+                            <h6>Необходима закупка:</h6>
+                            <ul class="mb-0">
+                                <li>Нехватка: {{ shortage_info.shortage_amount }} {{ material.unit_of_measure }}</li>
+                                <li>Упаковок к покупке: {{ shortage_info.packages_needed }} шт.</li>
+                                <li>Всего единиц: {{ shortage_info.total_units_to_buy }} {{ material.unit_of_measure }}</li>
+                                <li><strong>Стоимость закупки: {{ "%.2f"|format(shortage_info.min_purchase_cost) }} ₽</strong></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success">
+                            Запасы материала достаточны
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
+<script>
+// Дополнительная валидация формы
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form[data-validate]');
+    const priceInput = document.querySelector('input[name="price_per_unit"]');
+    const minQuantityInput = document.querySelector('input[name="min_quantity"]');
+    
+    // Валидация цены
+    if (priceInput) {
+        priceInput.addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            if (value < 0) {
+                this.setCustomValidity('Цена не может быть отрицательной');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+    
+    // Валидация минимального количества
+    if (minQuantityInput) {
+        minQuantityInput.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            if (value < 0) {
+                this.setCustomValidity('Минимальное количество не может быть отрицательным');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

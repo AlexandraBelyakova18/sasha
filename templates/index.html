@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - Система управления материалами{% endblock %}
+
+{% block page_header %}
+<div class="text-center mb-5">
+    <h1>Система управления материалами</h1>
+    <p class="lead">Производственная компания "МОЗАИКА"</p>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Карточка материалов -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-boxes"></i> Управление материалами
+                </h3>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Просматривайте, добавляйте и редактируйте информацию о материалах, используемых в производстве керамической плитки.
+                </p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success"></i> Просмотр списка материалов</li>
+                    <li><i class="fas fa-check text-success"></i> Добавление новых материалов</li>
+                    <li><i class="fas fa-check text-success"></i> Редактирование существующих</li>
+                    <li><i class="fas fa-check text-success"></i> Расчет стоимости закупок</li>
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('materials') }}" class="btn btn-primary btn-lg w-100">
+                    Перейти к материалам
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Карточка поставщиков -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-truck"></i> Поставщики
+                </h3>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Управляйте информацией о поставщиках материалов и отслеживайте историю поставок.
+                </p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success"></i> Список всех поставщиков</li>
+                    <li><i class="fas fa-check text-success"></i> Рейтинги и контакты</li>
+                    <li><i class="fas fa-check text-success"></i> История сотрудничества</li>
+                    <li><i class="fas fa-check text-success"></i> Поставщики по материалам</li>
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('all_suppliers') }}" class="btn btn-secondary btn-lg w-100">
+                    Просмотр поставщиков
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Информационная панель -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="info-panel">
+            <h4>О системе</h4>
+            <p>
+                Данная система предназначена для эффективного управления материалами в производственной компании "МОЗАИКА", 
+                специализирующейся на выпуске керамической плитки. Система позволяет:
+            </p>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul>
+                        <li>Отслеживать остатки материалов на складе</li>
+                        <li>Контролировать минимальные запасы</li>
+                        <li>Рассчитывать стоимость закупок</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul>
+                        <li>Управлять информацией о поставщиках</li>
+                        <li>Вести историю поставок</li>
+                        <li>Анализировать эффективность поставщиков</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Быстрые действия -->
+<div class="row mt-4">
+    <div class="col-12">
+        <h3>Быстрые действия</h3>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('add_material') }}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Добавить материал
+            </a>
+            <a href="{{ url_for('materials') }}" class="btn btn-outline-primary">
+                <i class="fas fa-list"></i> Все материалы
+            </a>
+            <a href="{{ url_for('all_suppliers') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-building"></i> Все поставщики
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Font Awesome для иконок -->
+<script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
+{% endblock %}

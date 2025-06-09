@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Ошибка - Система управления материалами{% endblock %}
+
+{% block page_header %}
+<h1 class="text-danger">Произошла ошибка</h1>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> Ошибка приложения
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                    <div class="alert alert-danger">
+                        <h5>Описание ошибки:</h5>
+                        <p class="mb-0">{{ error }}</p>
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger">
+                        <h5>Неизвестная ошибка</h5>
+                        <p class="mb-0">Произошла неопределенная ошибка. Попробуйте повторить операцию позже.</p>
+                    </div>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <h6>Возможные причины:</h6>
+                    <ul>
+                        <li>Временные проблемы с сервером</li>
+                        <li>Неверные данные в запросе</li>
+                        <li>Отсутствие необходимых прав доступа</li>
+                        <li>Проблемы с базой данных</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Что можно сделать:</h6>
+                    <ul>
+                        <li>Обновить страницу (F5)</li>
+                        <li>Вернуться на предыдущую страницу</li>
+                        <li>Перейти на главную страницу</li>
+                        <li>Обратиться к администратору системы</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card-footer">
+                <div class="d-flex gap-2 flex-wrap justify-content-center">
+                    <button onclick="history.back()" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Назад
+                    </button>
+                    <button onclick="location.reload()" class="btn btn-warning">
+                        <i class="fas fa-redo"></i> Обновить страницу
+                    </button>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i class="fas fa-home"></i> На главную
+                    </a>
+                    <a href="{{ url_for('materials') }}" class="btn btn-success">
+                        <i class="fas fa-boxes"></i> К материалам
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Дополнительная информация для разработчиков -->
+        {% if config.DEBUG %}
+            <div class="card mt-4 border-warning">
+                <div class="card-header bg-warning">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bug"></i> Отладочная информация
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Режим отладки включен</strong></p>
+                    <p>Время ошибки: {{ moment().format('DD.MM.YYYY HH:mm:ss') }}</p>
+                    {% if request %}
+                        <p>URL: {{ request.url }}</p>
+                        <p>Метод: {{ request.method }}</p>
+                        <p>IP: {{ request.remote_addr }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Дополнительная помощь -->
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8">
+        <div class="info-panel">
+            <h5><i class="fas fa-lightbulb"></i> Полезные ссылки</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('index') }}">Главная страница</a></li>
+                        <li><a href="{{ url_for('materials') }}">Список материалов</a></li>
+                        <li><a href="{{ url_for('add_material') }}">Добавить материал</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('all_suppliers') }}">Все поставщики</a></li>
+                        <li><a href="javascript:history.back()">Предыдущая страница</a></li>
+                        <li><a href="javascript:location.reload()">Обновить страницу</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
+<script>
+// Автоматическое обновление через 30 секунд, если пользователь не взаимодействует со страницей
+let autoRefreshTimer;
+let userActive = false;
+
+function resetAutoRefresh() {
+    userActive = true;
+    clearTimeout(autoRefreshTimer);
+}
+
+function setAutoRefresh() {
+    if (!userActive) {
+        autoRefreshTimer = setTimeout(function() {
+            if (confirm('Обновить страницу автоматически?')) {
+                location.reload();
+            }
+        }, 30000);
+    }
+}
+
+// Отслеживание активности пользователя
+document.addEventListener('mousemove', resetAutoRefresh);
+document.addEventListener('keypress', resetAutoRefresh);
+document.addEventListener('click', resetAutoRefresh);
+
+// Запуск автообновления
+setTimeout(setAutoRefresh, 1000);
+</script>
+{% endblock %}

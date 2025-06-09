@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Материалы - Система управления материалами{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Управление материалами</h1>
+    <a href="{{ url_for('add_material') }}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Добавить материал
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Кнопка "Назад" -->
+<div class="back-button">
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Назад
+    </a>
+</div>
+
+{% if materials %}
+    <div class="row">
+        {% for material_data in materials %}
+            {% set material = material_data.material %}
+            {% set shortage_info = material_data.shortage_info %}
+            
+            <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="card material-card {{ 'shortage-highlight' if shortage_info.has_shortage else 'adequate-stock' }}">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">{{ material.name }}</h5>
+                        {% if shortage_info.has_shortage %}
+                            <span class="badge badge-shortage">Нехватка</span>
+                        {% else %}
+                            <span class="badge badge-ok">В норме</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body">
+                        <p class="text-muted mb-2">
+                            <strong>Тип:</strong> {{ material.material_type.name }}
+                        </p>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted">На складе:</small><br>
+                                <span class="h6">{{ material.quantity_in_stock }} {{ material.unit_of_measure }}</span>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Минимум:</small><br>
+                                <span class="h6">{{ material.min_quantity }} {{ material.unit_of_measure }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted">В упаковке:</small><br>
+                                <span>{{ material.quantity_in_package }} {{ material.unit_of_measure }}</span>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Цена за единицу:</small><br>
+                                <span>{{ "%.2f"|format(material.price_per_unit) }} ₽</span>
+                            </div>
+                        </div>
+                        
+                        {% if material.description %}
+                            <p class="card-text">
+                                <small class="text-muted">{{ material.description }}</small>
+                            </p>
+                        {% endif %}
+                        
+                        <!-- Информация о стоимости закупки -->
+                        {% if shortage_info.has_shortage %}
+                            <div class="cost-highlight">
+                                <strong>Необходимо докупить:</strong><br>
+                                <small>Нехватка: {{ shortage_info.shortage_amount }} {{ material.unit_of_measure }}</small><br>
+                                <small>Упаковок: {{ shortage_info.packages_needed }} шт.</small><br>
+                                <small>Всего единиц: {{ shortage_info.total_units_to_buy }} {{ material.unit_of_measure }}</small><br>
+                                <strong class="text-danger">
+                                    Стоимость: {{ "%.2f"|format(shortage_info.min_purchase_cost) }} ₽
+                                </strong>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-success">
+                                <small>Запасы достаточны</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="btn-group w-100" role="group">
+                            <a href="{{ url_for('edit_material', id=material.id) }}" 
+                               class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i> Редактировать
+                            </a>
+                            <a href="{{ url_for('material_suppliers', id=material.id) }}" 
+                               class="btn btn-secondary btn-sm">
+                                <i class="fas fa-truck"></i> Поставщики
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Сводная информация -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Сводная информация</h4>
+                </div>
+                <div class="card-body">
+                    {% set total_materials = materials|length %}
+                    {% set shortage_materials = materials|selectattr('shortage_info.has_shortage')|list %}
+                    {% set total_shortage_cost = shortage_materials|sum(attribute='shortage_info.min_purchase_cost') %}
+                    
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-primary">{{ total_materials }}</h3>
+                                <p class="mb-0">Всего материалов</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-danger">{{ shortage_materials|length }}</h3>
+                                <p class="mb-0">Требуют закупки</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-success">{{ total_materials - shortage_materials|length }}</h3>
+                                <p class="mb-0">В достатке</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h3 class="text-warning">{{ "%.2f"|format(total_shortage_cost) }} ₽</h3>
+                                <p class="mb-0">Общая стоимость закупок</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% else %}
+    <div class="text-center py-5">
+        <div class="alert alert-info">
+            <h4>Материалы не найдены</h4>
+            <p>В системе пока нет добавленных материалов.</p>
+            <a href="{{ url_for('add_material') }}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Добавить первый материал
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
+{% endblock %}

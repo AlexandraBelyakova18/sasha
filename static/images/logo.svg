@@ -1,0 +1,26 @@
+<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- Фон логотипа -->
+  <rect width="200" height="60" fill="#ABCFCE" rx="8"/>
+  
+  <!-- Мозаичный узор из квадратов (3x3) как на иконке -->
+  <g transform="translate(20, 10)">
+    <!-- Первый ряд -->
+    <rect x="0" y="0" width="12" height="12" fill="#546F94" stroke="#FFFFFF" stroke-width="1"/>
+    <rect x="14" y="0" width="12" height="12" fill="#546F94" stroke="#FFFFFF" stroke-width="1"/>
+    <rect x="28" y="0" width="12" height="12" fill="#546F94" stroke="#FFFFFF" stroke-width="1"/>
+    
+    <!-- Второй ряд -->
+    <rect x="0" y="14" width="12" height="12" fill="#546F94" stroke="#FFFFFF" stroke-width="1"/>
+    <rect x="14" y="14" width="12" height="12" fill="#546F94" stroke="#FFFFFF" stroke-width="1"/>
+    <rect x="28" y="14" width="12" height="12" fill="#546F94" stroke="#FFFFFF" stroke-width="1"/>
+    
+    <!-- Третий ряд -->
+    <rect x="0" y="28" width="12" height="12" fill="#546F94" stroke="#FFFFFF" stroke-width="1"/>
+    <rect x="14" y="28" width="12" height="12" fill="#546F94" stroke="#FFFFFF" stroke-width="1"/>
+    <rect x="28" y="28" width="12" height="12" fill="#546F94" stroke="#FFFFFF" stroke-width="1"/>
+  </g>
+  
+  <!-- Название компании -->
+  <text x="70" y="25" font-family="Comic Sans MS, cursive" font-size="18" font-weight="bold" fill="#546F94">МОЗАИКА</text>
+  <text x="70" y="42" font-family="Comic Sans MS, cursive" font-size="12" fill="#546F94">Керамическая плитка</text>
+</svg>

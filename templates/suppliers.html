@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if material %}Поставщики материала "{{ material.name }}"{% else %}Все поставщики{% endif %} - Система управления материалами
+{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>
+        {% if material %}
+            Поставщики материала "{{ material.name }}"
+        {% else %}
+            Все поставщики
+        {% endif %}
+    </h1>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Кнопка "Назад" -->
+<div class="back-button">
+    {% if material %}
+        <a href="{{ url_for('materials') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Назад к материалам
+        </a>
+    {% else %}
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> На главную
+        </a>
+    {% endif %}
+</div>
+
+{% if material %}
+    <!-- Информация о материале -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Информация о материале</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Наименование:</strong><br>
+                    {{ material.name }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Тип:</strong><br>
+                    {{ material.material_type.name }}
+                </div>
+                <div class="col-md-3">
+                    <strong>На складе:</strong><br>
+                    {{ material.quantity_in_stock }} {{ material.unit_of_measure }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Цена за единицу:</strong><br>
+                    {{ "%.2f"|format(material.price_per_unit) }} ₽
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Список поставщиков -->
+{% if suppliers %}
+    {% if material %}
+        <!-- Поставщики для конкретного материала -->
+        <div class="row">
+            {% for supplier_data in suppliers %}
+                {% set supplier = supplier_data.supplier %}
+                {% set material_supplier = supplier_data.material_supplier %}
+                
+                <div class="col-lg-6 col-xl-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">{{ supplier.name }}</h5>
+                            <span class="badge bg-primary">Рейтинг: {{ supplier.rating }}/10</span>
+                        </div>
+                        
+                        <div class="card-body">
+                            {% if supplier.inn %}
+                                <p class="mb-2">
+                                    <strong>ИНН:</strong> {{ supplier.inn }}
+                                </p>
+                            {% endif %}
+                            
+                            <p class="mb-2">
+                                <strong>Дата начала работы:</strong><br>
+                                {{ supplier.start_date.strftime('%d.%m.%Y') if supplier.start_date else 'Не указана' }}
+                            </p>
+                            
+                            {% if material_supplier.supply_price %}
+                                <p class="mb-2">
+                                    <strong>Цена поставки:</strong><br>
+                                    <span class="text-success">{{ "%.2f"|format(material_supplier.supply_price) }} ₽</span>
+                                </p>
+                            {% endif %}
+                            
+                            {% if material_supplier.last_delivery_date %}
+                                <p class="mb-2">
+                                    <strong>Последняя поставка:</strong><br>
+                                    {{ material_supplier.last_delivery_date.strftime('%d.%m.%Y') }}
+                                </p>
+                            {% endif %}
+                            
+                            <!-- Контактная информация -->
+                            {% if supplier.contact_phone or supplier.contact_email %}
+                                <hr>
+                                <h6>Контакты:</h6>
+                                {% if supplier.contact_phone %}
+                                    <p class="mb-1">
+                                        <i class="fas fa-phone"></i> {{ supplier.contact_phone }}
+                                    </p>
+                                {% endif %}
+                                {% if supplier.contact_email %}
+                                    <p class="mb-1">
+                                        <i class="fas fa-envelope"></i> {{ supplier.contact_email }}
+                                    </p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <!-- Рейтинг визуально -->
+                                <div class="rating">
+                                    {% for i in range(1, 11) %}
+                                        {% if i <= supplier.rating %}
+                                            <i class="fas fa-star text-warning"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-muted"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                
+                                <!-- Сравнение цен -->
+                                {% if material_supplier.supply_price and material.price_per_unit %}
+                                    {% set price_diff = material_supplier.supply_price - material.price_per_unit %}
+                                    {% if price_diff < 0 %}
+                                        <small class="text-success">
+                                            Экономия: {{ "%.2f"|format(-price_diff) }} ₽
+                                        </small>
+                                    {% elif price_diff > 0 %}
+                                        <small class="text-danger">
+                                            Дороже на: {{ "%.2f"|format(price_diff) }} ₽
+                                        </small>
+                                    {% else %}
+                                        <small class="text-info">Равные цены</small>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+    {% else %}
+        <!-- Все поставщики -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Наименование</th>
+                        <th>ИНН</th>
+                        <th>Рейтинг</th>
+                        <th>Дата начала работы</th>
+                        <th>Контакты</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supplier in suppliers %}
+                        <tr>
+                            <td>
+                                <strong>{{ supplier.name }}</strong>
+                            </td>
+                            <td>{{ supplier.inn or '—' }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-primary me-2">{{ supplier.rating }}/10</span>
+                                    <div class="rating-stars">
+                                        {% for i in range(1, 11) %}
+                                            {% if i <= supplier.rating %}
+                                                <i class="fas fa-star text-warning"></i>
+                                            {% else %}
+                                                <i class="far fa-star text-muted"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {{ supplier.start_date.strftime('%d.%m.%Y') if supplier.start_date else '—' }}
+                            </td>
+                            <td>
+                                {% if supplier.contact_phone %}
+                                    <div><i class="fas fa-phone"></i> {{ supplier.contact_phone }}</div>
+                                {% endif %}
+                                {% if supplier.contact_email %}
+                                    <div><i class="fas fa-envelope"></i> {{ supplier.contact_email }}</div>
+                                {% endif %}
+                                {% if not supplier.contact_phone and not supplier.contact_email %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    
+    <!-- Статистика -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Статистика поставщиков</h4>
+                </div>
+                <div class="card-body">
+                    {% if material %}
+                        {% set avg_rating = suppliers|map(attribute='supplier.rating')|sum / suppliers|length %}
+                        {% set supply_prices = suppliers|selectattr('material_supplier.supply_price')|map(attribute='material_supplier.supply_price')|list %}
+                        
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <h3 class="text-primary">{{ suppliers|length }}</h3>
+                                <p class="mb-0">Всего поставщиков</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <h3 class="text-info">{{ "%.1f"|format(avg_rating) }}</h3>
+                                <p class="mb-0">Средний рейтинг</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                {% if supply_prices %}
+                                    <h3 class="text-success">{{ "%.2f"|format(supply_prices|min) }} ₽</h3>
+                                    <p class="mb-0">Лучшая цена</p>
+                                {% else %}
+                                    <h3 class="text-muted">—</h3>
+                                    <p class="mb-0">Цены не указаны</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        {% set avg_rating = suppliers|map(attribute='rating')|sum / suppliers|length %}
+                        {% set high_rated = suppliers|selectattr('rating', 'ge', 8)|list %}
+                        
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <h3 class="text-primary">{{ suppliers|length }}</h3>
+                                <p class="mb-0">Всего поставщиков</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <h3 class="text-info">{{ "%.1f"|format(avg_rating) }}</h3>
+                                <p class="mb-0">Средний рейтинг</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <h3 class="text-success">{{ high_rated|length }}</h3>
+                                <p class="mb-0">С высоким рейтингом (8+)</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% else %}
+    <div class="text-center py-5">
+        <div class="alert alert-info">
+            <h4>Поставщики не найдены</h4>
+            {% if material %}
+                <p>Для данного материала пока не назначены поставщики.</p>
+            {% else %}
+                <p>В системе пока нет зарегистрированных поставщиков.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
+<style>
+.rating-stars {
+    font-size: 0.8em;
+}
+.rating i {
+    font-size: 0.9em;
+}
+</style>
+{% endblock %}
